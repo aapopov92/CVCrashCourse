@@ -60,3 +60,26 @@ cv2.putText(output, text, (10, 25),  cv2.FONT_HERSHEY_SIMPLEX, 0.7,
 cv2.imshow("Contours", output)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+# we apply erosions to reduce the size of foreground objects
+mask = thresh.copy()
+mask = cv2.erode(mask, None, iterations=5)
+cv2.imshow("Eroded", mask)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# similarly, dilations can increase the size of the ground objects
+mask = thresh.copy()
+mask = cv2.dilate(mask, None, iterations=5)
+cv2.imshow("Dilated", mask)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# a typical operation we may want to apply is to take our mask and
+# apply a bitwise AND to our input image, keeping only the masked
+# regions
+mask = thresh.copy()
+output = cv2.bitwise_and(image, image, mask=mask)
+cv2.imshow("masked", output)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
