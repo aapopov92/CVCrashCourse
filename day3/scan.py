@@ -24,7 +24,7 @@ image = imutils.resize(image, height=500)
 # in the image
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray = cv2.GaussianBlur(gray, (5,5), 0)
-edged = cv2.Canny(gray, 25, 400)
+edged = cv2.Canny(gray, 75, 200)
 
 # show the original image and the edge detected image
 cv2.imshow("Image", gray)
@@ -37,26 +37,49 @@ cv2.destroyAllWindows()
 contours = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 contours = imutils.grab_contours(contours)
 contours = sorted(contours, key=cv2.contourArea, reverse=False)[5:]
+
 # loop over the contours
 print(f"Found {len(contours)} contours")
 for c in contours:
 	# approximate
 	perimeter = cv2.arcLength(c, True)
 	approx = cv2.approxPolyDP(c, 0.02 * perimeter, True)
-	cv2.drawContours(image, [approx], -1, (0, 255, 0), 2)
+	
+	# if our approximated contour has four points, then we
+	# can assume that we have found our screen
+	if len(approx) == 4:
+		screenCnt = approx
+
+cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
 cv2.imshow("Outline", image)
-key = cv2.waitKey(0) #change to your own waiting time 1000 = 1 second 
-if key == 27: #if ESC is pressed, exit
-	cv2.destroyAllWindows()
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
-	# # if our approximated contour has four points, then we
-	# # can assume that we have found our screen
-	# if len(approx) == 4:
-	# 	screenCnt = approx
-	# 	break
+# apply the four point transform to obtain a top-down
+# view of the original image
+warped = four_point_transform(orig, screenCnt.reshape(4, 2) * ratio)
 
-# # show the contour (outline) of the piece of paper
-# cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
-# cv2.imshow("Outline", image)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
+# convert the warped image to grayscale, then threshold it
+# to give it that 'black and white' paper effect
+warped = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
+T = threshold_local(warped, 11, offset = 10, method = "gaussian")
+warped = (warped > T).astype("uint8") * 255
+
+# show the original and scanned images
+
+cv2.imshow("Original", imutils.resize(orig, height = 650))
+cv2.imshow("Scanned", imutils.resize(warped, height = 650))
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+
+
+
+
+
+
+
+
+
+
