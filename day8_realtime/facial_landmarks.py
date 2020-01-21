@@ -1,6 +1,5 @@
 # USAGE
-# python facial_landmarks.py --shape-predictor shape_predictor_68_face_landmarks.dat --image images/example_01.jpg 
-
+# python facial_landmarks.py --shape-predictor shape_predictor_68_face_landmarks.dat
 # import the necessary packages
 from imutils import face_utils
 from imutils.video import VideoStream
@@ -27,8 +26,7 @@ time.sleep(2.0)
 while True:
 	frame = vs.read()
 	frame = imutils.resize(frame, width=600)
-	#gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-	# detect faces in the grayscale image
+	# detect faces in the frame
 	rects = detector(frame, 1)
 
 	# loop over the face detections
@@ -43,11 +41,7 @@ while True:
 		# [i.e., (x, y, w, h)], then draw the face bounding box
 		(x, y, w, h) = face_utils.rect_to_bb(rect)
 		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 1)
-
-		# # show the face number
-		# cv2.putText(frame, "Face #{}".format(i + 1), (x - 10, y - 10),
-		# 	cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
+		
 		# loop over the (x, y)-coordinates for the facial landmarks
 		# and draw them on the image
 		for (x, y) in shape:
