@@ -39,13 +39,13 @@ cnts = imutils.grab_contours(cnts)
 #sort contours and initialise scale factor
 (cnts, _) = contours.sort_contours(cnts)
 pixelsPerMetric = None
-
+orig = image.copy()
 for c in cnts:
     if cv2.contourArea(c) < 100:
         continue
 
     #compute rotated bounding box of the contour O_o
-    orig = image.copy()
+    
     box = cv2.minAreaRect(c)
     box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
 
@@ -106,7 +106,7 @@ for c in cnts:
         (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,
         0.65, (255, 255, 255), 2)
 
-    show_and_wait('Orig', orig)
+show_and_wait('Orig', orig)
 
 
 
