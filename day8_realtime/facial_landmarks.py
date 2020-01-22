@@ -3,6 +3,7 @@
 # import the necessary packages
 from imutils import face_utils
 from imutils.video import VideoStream
+from random import randint
 import time
 import numpy as np
 import argparse
@@ -26,6 +27,7 @@ time.sleep(2.0)
 while True:
 	frame = vs.read()
 	frame = imutils.resize(frame, width=600)
+	black = np.zeros(frame.shape, np.uint8)
 	# detect faces in the frame
 	rects = detector(frame, 1)
 
@@ -42,15 +44,18 @@ while True:
 		(x, y, w, h) = face_utils.rect_to_bb(rect)
 		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 1)
 		
+		#color = (randint(10, 255), randint(10, 255), randint(10, 255))
+		color = (0, 255, 0)
 		# loop over the (x, y)-coordinates for the facial landmarks
 		# and draw them on the image
 		for (x, y) in shape:
-			cv2.circle(frame, (x, y), 1, (0, 0, 255), 2)
+			cv2.circle(black, (x, y), 1, color, 2)
+		result = np.concatenate((frame, black), axis=1)
 
-	cv2.imshow("Frame", frame)
+	cv2.imshow("Frame", result)
 	key = cv2.waitKey(1) & 0xFF
 	if key == ord("q"):
 		break
 
-vs.release()
+vs.stop()
 cv2.destroyAllWindows()
